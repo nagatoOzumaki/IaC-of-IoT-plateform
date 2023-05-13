@@ -1,0 +1,63 @@
+---
+- hosts: server
+  become: true
+  vars_files: ../variables/main.yaml
+  tasks:
+  
+    - name: Create Docker container
+      docker_container:
+        name: "{{ influxdb_container_name }}"
+        image: "{{ influxdb_image }}"
+        network_mode: "{{ network_name }}"
+        state: started
+        ports:
+          - "{{ influxdb_host_port }}:{{ influxdb_container_port }}"
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: "{{influxdb_init_username}}"
+          DOCKER_INFLUXDB_INIT_PASSWORD: "{{influxdb_init_password}}"
+          DOCKER_INFLUXDB_INIT_ORG: "{{influxdb_init_org}}"
+          DOCKER_INFLUXDB_INIT_BUCKET: "{{influxdb_init_bucket}}"
+          DOCKER_INFLUXDB_INIT_RETENTION: "{{influxdb_init_retention}}"
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{influxdb_init_admin_token}}"
+        # volumes:
+        #   - "myInfluxVolume:/var/lib/influxdb2"
+    - name: Wait for InfluxDB container to be ready
+      pause:
+        seconds: 40  
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # - name: Generate InfluxDB token
+    #   uri:
+    #     url: "http://localhost:8086/api/v2/auth/token"
+    #     method: POST
+    #     body_format: json
+    #     body:
+    #       username: admin
+    #       password: adminadmin
+    #     headers:
+    #       Content-Type: "application/json"
+    #     return_content: yes
+    #   register: influx_token
+
+    # - name: Save token to file
+    #   copy:
+    #     content: "{{ influx_token.json.access_token }}"
+    #     dest: "/vagrant_data/influxdb_token.txt"
